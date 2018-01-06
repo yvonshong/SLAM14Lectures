@@ -56,8 +56,6 @@ $=[q_1, q_2 ,\cdots,q_n]  \begin{bmatrix} q_1^T x_1  &&  q_1^T x_2 && \cdots && 
 
 $=QR $
 
-
-
 ### b. Givens 旋转
 
 令 $x$ 逆时针旋转 $\theta $ 弧度，旋转矩阵为
@@ -65,8 +63,6 @@ $=QR $
 $Q= \begin{bmatrix}  cos(\theta) && -sin(\theta)\\   sin(\theta) && cos(\theta)     \end{bmatrix} = \frac{1}{\sqrt{x_1^2 +x_2^2}} \begin{bmatrix}  x_1 && x_2 \\  -x_2&&  x_1    \end{bmatrix}$
 
 在向量空间中任取两个坐标轴，假设是第i个和第j个轴，$i \neq j$ ，Given 旋转就是在这两个坐标轴所张开的平面上旋转。
-
-
 
 $Q_{ji} = \begin{bmatrix} 1 && \cdots&& 0&&\cdots &&0&& \cdots&&0\\           \vdots &&\ddots && \vdots && &&\vdots &&&&\vdots \\             1 && \cdots&& c&&\cdots &&-s&& \cdots&&0\\                           \vdots && && \vdots &&\ddots &&\vdots &&&&\vdots \\              1 && \cdots&& -s&&\cdots &&c&& \cdots&&0\\            \vdots &&  && \vdots && &&\vdots && \ddots &&\vdots \\                              1 && \cdots&& 0&&\cdots &&0&& \cdots&&1                      \end{bmatrix} $
 
@@ -205,10 +201,6 @@ int main( int argc, char** argv )
 ```
 
 
-
-
-
-
 # 几何运算练习
 
 小萝卜一号的位姿为 $q_1 =[0.35,0.2,0.3,0.1] , t_1 =[0.3,0.1,0.1]^T$  （$T_{cw}$ 世界到相机的变换关系）
@@ -219,11 +211,26 @@ int main( int argc, char** argv )
 
 求该点在小萝卜二号下的坐标的代码
 
+```cpp
+#include <iostream>
+#include <Eigen/Core>
+#include <Eigen/Dense>
+#include <Eigen/Geometry>
+using namespace std;
 
-
-
-
-
+int main( int argc, char** argv )
+{
+    Eigen::Quaterniond q_1(0.35,0.2,0.3,0.1);
+    Eigen::Quaterniond q_2(-0.5,0.4,-0.1,0.2);
+    Eigen::Vector3d p_1(0.5,0,0.2);
+    Eigen::Vector3d p_2;
+    Eigen::Vector3d t_1(0.3,0.1,0.1);
+    Eigen::Vector3d t_2(-0.1,0.5,0.3);
+    p_2 = q_2*(t_1+q_1.conjugate()*p_1 -t_2 );
+    cout<<p_2<<endl;
+    return 0;
+}
+```
 
 # 罗德里格斯公式的证明
 
@@ -232,9 +239,51 @@ $ R=cos(\theta) I -(1-cos(\theta))nn^T +sin(\theta) n^\land $
 
 ## 1. 旋转矩阵
 
+适当的正交矩阵的行列式为1，实正交矩阵的特征值的绝对值等于1，且实矩阵若存在复特征值必然为共轭对。因此，由欧拉旋转定理可推论$3\times 3$阶旋转矩阵R的特征值为$1，e^{i\theta}，e^{-i \theta}$。旋转矩阵R满足$RR^\ast=R^\ast R$，此为正规矩阵，等价条件是R可么正对角化为$R=UDU^\ast$，其中U是酉矩阵，$U^\ast=U^{-1}$，且$D=\text{diag}（1，e^{i\theta}，e^{ -i\theta}）$。令$U=\begin{bmatrix} \mathbf{u}&\mathbf{v}&\mathbf{w} \end{bmatrix}$，其中$\mathbf{u}，\mathbf{v}，\mathbf{w}$组成一个单位正交集。酉对角化蕴含下列性质：
 
+$U^\ast U=I$推得$\mathbf{u}^\ast\mathbf{u}=\mathbf{v}^\ast\mathbf{v}=\mathbf{w}^\ast\mathbf{w}=1$且$\mathbf{u}^\ast\mathbf{v}=\mathbf{v}^\ast\mathbf{w}=\mathbf{w}^\ast\mathbf{u}=0$
 
+$UU^\ast=I$推得$\mathbf{u}\mathbf{u}^\ast+\mathbf{v}\mathbf{v}^\ast+\mathbf{w}\mathbf{w}^\ast=I$
 
+乘开$RU=UD$，$R\mathbf{u}=\mathbf{u}$表明$\mathbf{u}$是一个单位实向量，$R\mathbf{v}=e^{i\theta}\mathbf{v}$和$R\mathbf{w}=e^{-i\theta}\mathbf{w}$表明$\mathbf{v}$和$\mathbf{w}$是单位复向量。
+
+使用这些性质以及欧拉公式$e^{\pm i\theta}=\cos\theta\pm i\sin\theta$，
+
+$  R=\begin{bmatrix} \mathbf{u}&\mathbf{v}&\mathbf{w} \end{bmatrix}\begin{bmatrix} 1&0&0\\ 0&e^{i\theta}&0\\ 0&0&e^{-i\theta} \end{bmatrix}  \begin{bmatrix} \mathbf{u}^\ast\\ \mathbf{v}^\ast\\ \mathbf{w}^\ast \end{bmatrix}$
+
+$=\mathbf{u}\mathbf{u}^\ast+（\cos\theta+i\sin\theta）\mathbf{v}\mathbf{v}^\ast+（\cos\theta-i\sin\theta）\mathbf{w}\mathbf{w}^\ast$
+
+$=\cos\theta（\mathbf{u}\mathbf{u}^\ast+\mathbf{v}\mathbf{v}^\ast+\mathbf{w}\mathbf{w}^\ast）+（1-\ cos\theta）\mathbf{u}\mathbf{u}^\ast+i\sin\theta（\mathbf{v}\mathbf{v}^\ast-\mathbf{w}\mathbf{w}^\ast）$
+
+$ =\cos\theta I+（1-\cos\theta）\mathbf{u}\mathbf{u}^T+i\sin\theta（\mathbf{v}\mathbf{v}^\ast-\mathbf{w}\mathbf{w}^\ast）=\cos\theta I+（1-\cos\theta）\mathbf{u}\mathbf{u}^T+\sin\theta K$
+
+其中$K=i（\mathbf{v}\mathbf{v}^\ast-\mathbf{w}\mathbf{w}^\ast）$。因为R和$\mathbf{u}\mathbf{u}^T$是实矩阵，上式表明K也是一个实矩阵，则
+
+$\displaystyle K^T=K^\ast=-i（\mathbf{v}\mathbf{v}^\ast-\mathbf{w}\mathbf{w}^\ast）^\ast=-i（\mathbf{v}\mathbf{v}^\ast-\mathbf{w}\mathbf{w}^\ast）=-K$
+
+推知K是反对称矩阵。令$K=\left[\begin{array}{rrr} 0&a&b\\ -a&0&c\\ -b&-c&0 \end{array}\right]$，其中$a，b，c\in\mathbb{R}$。对于任一$\theta$，$\mathbf{u}=R\mathbf{u}=\cos\theta\mathbf{u}+（1-\cos\theta）\mathbf{u}+\sin\theta K\mathbf{u}=\mathbf{u}+\sin\theta K\mathbf{u}$，可得
+
+$\displaystyle K\mathbf{u}=\left[ \begin{array}{rrr} 0&a&b\\ -a&0&c\\ -b&-c&0 \end{array} \right]\begin{bmatrix} u_1\\ u_2\\ u_3 \end{bmatrix}=\begin{bmatrix} 0\\ 0\\ 0 \end{bmatrix}$
+
+或改写为
+
+$\displaystyle \left[ \begin{array}{rrr} u_2&u_3&0\\ -u_1&0&u_3\\ 0&-u_1&-u_2 \end{array}\right]\begin{bmatrix} a\\ b\\ c \end{bmatrix}=\begin{bmatrix} 0\\ 0\\ 0 \end{bmatrix}$。
+
+解开上式，
+
+$\displaystyle \begin{bmatrix} a\\ b\\ c \end{bmatrix}=\alpha\left[ \begin{array}{r} -u_3\\ u_2\\ -u_1 \end{array} \right]$，
+
+其中$\alpha$是一个待确定的实数。定义「外积矩阵」
+
+$ \mathbf{u}^\land=\left[\begin{array}{rrr} 0&-u_3&u_2\\ u_3&0&-u_1\\ -u_2&u_1&0 \end{array}\right]$，
+
+即有$K=\alpha\mathbf{u}^\land  $。使用单范正交集$\{\mathbf{u}，\mathbf{v}，\mathbf{w}\}$的基本性质，
+
+$\displaystyle\begin{aligned} K^2&=i^2（\mathbf{v}\mathbf{v}^\ast-\mathbf{w}\mathbf{w}^\ast）（\mathbf{v}\mathbf{v}^\ast-\mathbf{w}\mathbf{w}^\ast）\\ &=-（\mathbf{v}\mathbf{v}^\ast\mathbf{v}\mathbf{v}^\ast-\mathbf{v}\mathbf{v}^\ast\mathbf{w}\mathbf {w}^\ast-\mathbf{w}\mathbf{w}^\ast\mathbf{v}\mathbf{v}^\ast+\mathbf{w}\mathbf{w}^\ast\mathbf{w}\mathbf{w}^\ast）\\ &=-（\mathbf{v}\mathbf{v}^\ast+\mathbf{w}\mathbf{w}^\ast）\\ &=\mathbf{u}\mathbf{u}^T-I\end{aligned}$
+
+再将$K=\alpha\mathbf{u} ^\land$代入上式，立得$\alpha=\pm 1$。我们选择$\alpha=1$，原因是配合惯例使$\theta$代表逆时针转角。令$R_\mathbf{u}（\theta）$代表一个旋转矩阵，其特征值为$1，\cos\theta\pm i\sin\theta$且$\mathbf{u}$为对应特征值1的单位特征向量。综合以上结果，旋转矩阵$R_\mathbf{u}（\theta）$的公式如下：
+
+$\displaystyle\begin{aligned} R_\mathbf{u}（\theta）&=\cos\theta I+（1-\cos\theta）\mathbf{u}\mathbf{u}^T+\sin\theta \mathbf{u} ^\land\\ &=\begin{bmatrix} u_1u_1v\theta+c\theta&u_1u_2v\theta-u_3s\theta&u_1u_3v\theta +u_2s\theta\\ u_1u_2v\theta+u_3s\theta&u_2u_2v\theta+c\theta&u_2u_3v\theta-u_1s\theta\\ u_1u_3v\theta-u_2s\theta&u_2u_3v\theta+u_1s\theta&u_3u_3v\theta+c\theta \end{bmatrix}，\end{aligned}$
 
 ## 2. 四元数
 
@@ -242,15 +291,29 @@ $ R=cos(\theta) I -(1-cos(\theta))nn^T +sin(\theta) n^\land $
 
 $\displaystyle q=\cos\frac{\theta}{2}+\sin\frac{\theta}{2}\mathbf{u}$
 
+其中$\Vert\mathbf{u}\Vert=1$。我们可以证明：以单位向量$\mathbf{u}$为转轴，线性变换$L_q(\mathbf{x})=q\mathbf{x}q^\ast$ 代表$ \mathbf{x}$逆时针旋转$\theta$角度。将给定向量$\mathbf{x}$分解成$\mathbf{x}=\mathbf{z}+\ mathbf{n}$，其中$\mathbf{z}$是$\mathbf{x}$在转轴$\mathbf{u}$的正交投影，$\mathbf{n}$代表垂直于$\mathbf{u}$的成分。因为$L_q（\mathbf{x}）=L_q（\mathbf{z}+\mathbf{n}）=L_q（\mathbf{z}）+L_q（\mathbf{n}）$，我们要证明$L_q$不改变$\mathbf{z}$且$L_q$将$\mathbf{n}$逆时针旋转$\theta$角度，见下图。
 
+![](https://ccjou.files.wordpress.com/2014/04/quaternion-and-3d-rotations.gif)
 
-其中$\Vert\mathbf{u}\Vert=1$。我们可以证明：以单位向量$\mathbf{u}$为转轴，线性变换$L_q（\mathbf{x}）=q\mathbf{x}q^\ast$ 代表$ \mathbf{x}$逆时针旋转$\theta$角度。将给定向量$\mathbf{x}$分解成$\mathbf{x}=\mathbf{z}+\ mathbf{n}$，其中$\mathbf{z}$是$\mathbf{x}$在转轴$\mathbf{u}$的正交投影，$\mathbf{n}$代表垂直于$\mathbf{u}$的成分。因为$L_q（\mathbf{x}）=L_q（\mathbf{z}+\mathbf{n}）=L_q（\mathbf{z}）+L_q（\mathbf{n}）$，我们要证明$L_q$不改变$\mathbf{z}$且$L_q$将$\mathbf{n}$逆时针旋转$\theta$角度，见下图。
+因为存在唯一$\alpha\in\mathbb{R}$使$\mathbf{z}=\alpha\mathbf{u}$，并且由性质 $\displaystyle \Vert L_q（\mathbf{x}）\Vert=\Vert q\mathbf{x}q^\ast\Vert=\vert q\vert~\Vert\mathbf{x}\Vert~\vert q^\ast\vert=\Vert\mathbf{x}\Vert$， 可知$L_q（\mathbf{z}）=\mathbf{z}$。利用$\mathbf{n}\perp\mathbf{u}$，即$\mathbf{n}\perp\mathbf{v}$，可得
 
+$\displaystyle\begin{aligned} L_q（\mathbf{n}）&=（a^2-\Vert\mathbf{v}\Vert^2）\mathbf{n}+2（\mathbf{v}\cdot\mathbf{n}）\mathbf{v}+2a（\mathbf{v}\times\mathbf{n}）\\ &=（a^2-\Vert\mathbf{v}\Vert^2）\mathbf{n}+2a（\mathbf{v}\times\mathbf{n}）=（a^2-\Vert\mathbf{v}\Vert^2）\mathbf{n}+2a\Vert\mathbf{v}\Vert（\mathbf{u}\times\mathbf{n}）\\ &=（a^2-\Vert\mathbf{v}\Vert^2）\mathbf{n}+2a\Vert\mathbf{v}\Vert\mathbf{n}_{\perp}，\end{aligned}$
 
+上面令$\mathbf{n}_{\perp}=\mathbf{u}\times\mathbf{n}$。注意$\mathbf{n}_\perp$垂直于$\mathbf{n}$且
 
+$\displaystyle \Vert\mathbf{n}_\perp\Vert=\Vert \mathbf{u}\times{\mathbf{n}}\Vert=\Vert\mathbf{u}\Vert~\Vert\mathbf{n}\Vert\sin\frac{\pi}{2}=\Vert\mathbf{n}\Vert$
 
+最后，将$a=\cos\frac{\theta}{2}$和$\Vert\mathbf{v}\Vert=\sin\frac{\theta}{2}$代入$L_q（\mathbf{n}）$的表达式，使用倍角公式，
 
+$ L_q（\mathbf{n}）= （\cos^2\frac{\theta}{2}-\sin^2\frac{\theta}{2}）\mathbf{n}+ （2\cos\frac{\theta}{2}\sin\frac{\theta}{2} ）\mathbf{n}_\perp=\cos\theta\mathbf{n}+\sin\theta\mathbf{n}_\perp $
 
+证得$L_q（\mathbf{n}）$即是垂直于转轴$\mathbf{u}$的平面上$\mathbf{n}$逆时针旋转$\theta$而得的向量。
+
+将单位四元数$q=\cos\frac{\theta}{2}+\sin\frac{\theta}{2}\mathbf{u}$代入旋转变换$L_q（\mathbf{x}）$的展开式，套用倍角公式和半角公式，推得
+
+$  L_q（\mathbf{x}）= （\cos^2\frac{\theta}{2}-\sin^2\frac{\theta}{2} ）\mathbf{x}+2 （\sin\frac{\theta}{2}\mathbf{u}\cdot\mathbf{x}   ）\sin\frac{\theta}{2}\mathbf{u}+2\cos\frac{\theta}{2} （\sin\ frac{\theta}{2}\mathbf{u}\times\mathbf{x} ） $
+
+$=\cos\theta\mathbf{x}+（1-\cos\theta）（\mathbf{u}\cdot\mathbf{x}）\mathbf{u}+\sin\theta（\mathbf{u}\times\mathbf{x}） $
 
 
 # 四元数运算性质的验证
@@ -261,9 +324,15 @@ $\displaystyle q=\cos\frac{\theta}{2}+\sin\frac{\theta}{2}\mathbf{u}$
 
 此时 $p'$ 必定为虚四元数（实部为零）
 
+证明：
 
+$q=(c,sv), p =(0,x)$
 
+$p' =qpq^{-1} =(c,sv)*(0,x)*(c,-sv)=(-svx,sv\times x+cx)*(c,-sv)$
 
+$=(-scvx+(sv\times x+cx)(sv) ,(sv\times x+cx)\times (sv)+(sv\times x+cx)c+svxsv)$
+
+实部为 $-scvx+(sv\times x+cx)(sv) = sv\times x ·v = 0 $
 
 
 
@@ -271,7 +340,35 @@ $\displaystyle q=\cos\frac{\theta}{2}+\sin\frac{\theta}{2}\mathbf{u}$
 
 上式亦可以写成矩阵运算： $p' =Qp$ ，根据推导给出矩阵 $Q_{4\times 4}$ 
 
+$q =w+x i+y j +kz$
 
+$Q=\begin{bmatrix}    1-2y^2 -2z^2 &&2 xy+2wz && 2xz -2wy  \\    2xy-2wz &&  1-2x^2 -2z^2  && 2 yz +2wx   \\  2 x z+ 2wy&&   2yz-2wx && 1-2x^2 -2y^2 \end{bmatrix}$
 
 # C++11
 
+```cpp
+
+#include <iostream> 
+#include <vector> 
+#include <algorithm> 
+using namespace std; 
+class A {
+public: 
+	A(const int& i ) : index(i) {} 
+	int index = 0; 
+}; 
+int main() { 
+	A a1(3), a2(5), a3(9); 
+	vector<A> avec{a1, a2, a3};
+	std::sort(avec.begin(), avec.end(), [](const A&a1, const A&a2) {return a1.index<a2.index;});
+	for( auto& a: avec ) cout<<a.index<<" "; 
+	cout<<endl; 
+	return 0; 
+}
+```
+
+` for( auto& a: avec ) ` 基于范围的for循环
+
+` auto& a` 类型推导
+
+` [](const A&a1, const A&a2)` lambda 表达式
