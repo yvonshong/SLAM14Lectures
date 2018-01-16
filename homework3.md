@@ -64,12 +64,6 @@ $=I+(\frac{1-\cos\theta}{\theta^2})\xi^\wedge+(\frac{\theta-\sin\theta}{\theta^3
 
 
 
-
-
-
-
-
-
 # 伴随 Adjoint
 
 ## $SO(3)$
@@ -116,11 +110,88 @@ $Ad(T)=\begin{bmatrix} R & t^\wedge R \\ 0 & R \end{bmatrix}$
 
 # 轨迹的描述
 
+物体的平移部分表示物体在坐标轴中的位置，旋转部分表示在这个点的姿态，有了平移部分就能知道在坐标轴中的移动，就是轨迹。
 
+
+
+```cpp
+int main(int argc, char **argv) {
+    vector<Sophus::SE3> poses;
+    /// implement pose reading code
+    // start your code here (5~10 lines)
+    ifstream fin(trajectory_file);
+    for ( int i=0; i<620; i++ )
+    {
+        double data[8] = {0};
+        for ( auto& d:data )
+            fin>>d;
+        Eigen::Quaterniond q( data[7], data[4], data[5], data[6] );
+        Eigen::Vector3d t(data[1], data[2], data[3]);
+        Sophus::SE3 SE3_qt(q,t);
+        poses.push_back(SE3_qt);
+    }
+    // end your code here
+    // draw trajectory in pangolin
+    DrawTrajectory(poses);
+    return 0;
+}
+```
+
+```
+cmake_minimum_required( VERSION 2.8 )
+project( trajectory )
+
+set( CMAKE_BUILD_TYPE Release )
+set( CMAKE_CXX_FLAGS "-std=c++11 -O3" )
+set(Sophus_LIBRARIES /home/song/Desktop/SLAM14/slambook/3rdparty/Sophus/build/libSophus.so)
+# opencv 
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+# sophus
+include_directories( /home/song/Desktop/SLAM14/slambook/3rdparty/Sophus )
+
+# sophus 
+find_package( Pangolin REQUIRED )
+include_directories( ${Pangolin_INCLUDE_DIRS} )
+# eigen 
+include_directories( "/usr/include/eigen3/" )
+
+add_executable( trajectory draw_trajectory.cpp )
+target_link_libraries( trajectory ${OpenCV_LIBS} ${Sophus_LIBRARIES}  ${Pangolin_LIBRARIES}    )
+
+# for the second task
+add_executable( rmse rmse.cpp )
+target_link_libraries( rmse ${OpenCV_LIBS} ${Sophus_LIBRARIES}  ${Pangolin_LIBRARIES}    )
+```
+
+![](img/trajectory1.jpg)
 
 
 
 # 轨迹的误差
 
+```cpp
+double RMSE(vector<Sophus::SE3> estimated_poses,vector<Sophus::SE3> groundtruth_poses)
+{
+    double sum = 0;
+    for(int i=0;i<estimated_poses.size();i++)
+    {
+        double error = 0;
+        double e = sqrt(  (groundtruth_poses.at(i).inverse() * estimated_poses.at(i)).log().transpose() *   (groundtruth_poses.at(i).inverse() * estimated_poses.at(i)).log()   );
 
 
+        error = pow(abs(e),2);
+        sum+= error;
+    }
+    double rmse = pow(sum/estimated_poses.size(),0.5);
+    return rmse;
+}
+```
+
+
+
+![](img/trajectory2.jpg)
+
+![](img/trajectory_error.jpg)
+
+2.20728
