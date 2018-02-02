@@ -164,7 +164,7 @@ add_executable( rmse rmse.cpp )
 target_link_libraries( rmse ${OpenCV_LIBS} ${Sophus_LIBRARIES}  ${Pangolin_LIBRARIES}    )
 ```
 
-![](img/trajectory1.jpg)
+![](img/3_trajectory1.jpg)
 
 
 
@@ -190,8 +190,8 @@ double RMSE(vector<Sophus::SE3> estimated_poses,vector<Sophus::SE3> groundtruth_
 
 
 
-![](img/trajectory2.jpg)
+![](img/3_trajectory2.jpg)
 
-![](img/trajectory_error.jpg)
+![](img/3_trajectory_error.jpg)
 
 2.20728

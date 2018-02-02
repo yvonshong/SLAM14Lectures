@@ -13,7 +13,7 @@ u_distorted = x_distorted*fx+cx;
 v_distorted = y_distorted*fy+cy;
 ```
 
-![](img/undistorted.jpg)
+![](img/4_undistorted.jpg)
 
 
 
@@ -30,7 +30,7 @@ point(2) = z;
 pointcloud.push_back(point);
 ```
 
-![](img/pcl.jpg)
+![](img/4_pcl.jpg)
 
 
 
@@ -95,4 +95,4 @@ dx = H.ldlt().solve(b);
 
 
 
-![](img/ldlt.jpg)
+![](img/4_ldlt.jpg)

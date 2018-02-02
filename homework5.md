@@ -3,7 +3,7 @@
 # ORB 特征点
 
 ## ORB 提取
-
+![](img/5_featurepoint.png)
 
 
 
@@ -17,6 +17,8 @@
 
 
 ## 暴力匹配
+![](img/5_match.png)
+
 
 
 
@@ -26,4 +28,8 @@
 
 
 
-#
+# 用 G-N 实现 Bundle Adjustment 
+
+
+# 用 ICP 实现轨迹对齐 
+
