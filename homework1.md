@@ -99,7 +99,7 @@ target_link_libraries(hello libhello)
 
 # ORB-SLAM2
 ## 1. git clone 
-![](/img/gitclone.png)
+![](/img/1_gitclone.png)
 
 ## 2. build
 ### a. 
@@ -153,7 +153,7 @@ All are linked to `libORB_SLAM2` library.
 # RUN ORB-SLAM2
 ## 1. build
 
-![build.png](img/build.png)
+![build.png](img/1_build.png)
 
 ## 2. CMakeLists.txt
 
@@ -174,5 +174,5 @@ target_link_libraries(myvideo ${PROJECT_NAME})
 
 ## 3. run
 
-![myvideo](img/myvideo.png)
+![myvideo](img/1_run.png)
 
