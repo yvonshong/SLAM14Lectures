@@ -155,8 +155,6 @@ int main(int argc, char **argv) {
     cout<<"error: "<< error<<endl;
     cout<<"average error: "<<error/count<<endl;
 
-
-
     return 0;
 }
 
