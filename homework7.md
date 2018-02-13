@@ -26,7 +26,7 @@
 
 BA在后端部分成为主流优化方法。
 
-
+物体检测。
 
 ## BAL-dataset
 
@@ -315,33 +315,39 @@ int main(int argc, char** argv)
 
 ### 如何描述任意⼀点投影在任意⼀图像中形成的 error？ 
 
+像素值差
 
+$\begin{equation} e = {\mathbf{I}_1}\left( {{\mathbf{p}_1}} \right) - {\mathbf{I}_2}\left( {{\mathbf{p}_2}} \right) \end{equation}$
 
 ### 每个 error 关联⼏个优化变量？ 
 
-
+变量为一个相机位姿，一个位姿顶点
 
 ### error 关于各变量的雅可⽐是什么？
+
+$  \frac{{\partial \mathbf{u}}}{{\partial \delta \mathbf{\xi} }} = \left[ {\begin{array}{*{20}{c}} {\frac{{{f_x}}}{Z}}&0&{ - \frac{{{f_x}X}}{{{Z^2}}}}&{ - \frac{{{f_x}XY}}{{{Z^2}}}}&{{f_x} + \frac{{{f_x}{X^2}}}{{{Z^2}}}}&{ - \frac{{{f_x}Y}}{Z}}\\ 0&{\frac{{{f_y}}}{Z}}&{ - \frac{{{f_y}Y}}{{{Z^2}}}}&{ - {f_y} - \frac{{{f_y}{Y^2}}}{{{Z^2}}}}&{\frac{{{f_y}XY}}{{{Z^2}}}}&{\frac{{{f_y}X}}{Z}} \end{array}} \right]  $
+
+$ \mathbf{J} = - \frac{{\partial { \mathbf{I}_2}}}{{\partial \mathbf{u}}}\frac{{\partial \mathbf{u}}}{{\partial \delta \mathbf{\xi} }} $
 
 
 
 ## 实现
 
-
-
 ### 能否不要以 $[x,y,z]^T$ 的形式参数化每个点？ 
 
-
+可以把像素值也直接作为参数
 
 ### 取 4x4 的 patch 好吗？取更⼤的 patch 好还是取⼩⼀点的 patch 好？  
 
-
+取大一点比较好，减少误差。
 
 ### 从本题中，你看到直接法与特征点法在 BA 阶段有何不同？  
 
-
+cost function不同，直接法是像素差，特征点法是重投影。
 
 ### 由于图像的差异，你可能需要鲁棒核函数，例如 Huber。此时 Huber 的阈值如何选取？ 
+
+取决于系统的鲁棒性要求，鲁棒性越强，阈值越低，对误差越包容。
 
 
 
