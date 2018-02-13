@@ -176,6 +176,7 @@ int main( int argc, char** argv )
 {
     Eigen::MatrixXd matrix;
     matrix = Eigen::MatrixXd::Random(MATRIX_SIZE,MATRIX_SIZE);
+    matrix = matrix.transponse()*matrix;
     Eigen::VectorXd b;
     b = Eigen::MatrixXd::Random( MATRIX_SIZE,1 );
 
@@ -222,10 +223,13 @@ int main( int argc, char** argv )
 {
     Eigen::Quaterniond q_1(0.35,0.2,0.3,0.1);
     Eigen::Quaterniond q_2(-0.5,0.4,-0.1,0.2);
+    q_1.normalize();
+    q_2.normalize();
     Eigen::Vector3d p_1(0.5,0,0.2);
     Eigen::Vector3d p_2;
     Eigen::Vector3d t_1(0.3,0.1,0.1);
     Eigen::Vector3d t_2(-0.1,0.5,0.3);
+  
     p_2 = q_2*(t_1+q_1.conjugate()*p_1 -t_2 );
     cout<<p_2<<endl;
     return 0;
